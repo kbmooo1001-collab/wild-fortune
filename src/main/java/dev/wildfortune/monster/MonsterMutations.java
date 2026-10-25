@@ -13,6 +13,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.AreaEffectCloud;
+import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -114,6 +116,13 @@ public final class MonsterMutations {
 
     public static int mutationCount(Mob mob) {
         return (int) EFFECTS.stream().filter(mob::hasEffect).count() + (hasHealthMutation(mob) ? 1 : 0);
+    }
+
+    public static MobEffectInstance creeperCloudEffect(AreaEffectCloud cloud, MobEffectInstance effect) {
+        if (cloud.getOwner() instanceof Creeper creeper && creeper.hasEffect(effect.getEffect())) {
+            return new MobEffectInstance(effect.getEffect(), 60, effect.getAmplifier(), false, true, true);
+        }
+        return effect;
     }
 
     private static void addHealth(Mob mob, double amount, boolean freshSpawn) {

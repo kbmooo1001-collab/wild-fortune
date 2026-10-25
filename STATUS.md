@@ -3,6 +3,7 @@
 - GitHub: https://github.com/kbmooo1001-collab/wild-fortune (비공개). `master` → `origin/master`, 기준 커밋 `bbac9e1`. 자동 AI 리뷰는 미설정·비활성 상태로 유지했다.
 - 환경: Minecraft Java 26.3 / Fabric Loader 0.20.1 / Fabric API 0.165.0+26.3 / Java 25 / Gradle 9.8.2 / Loom 1.19.3. 버전은 `gradle.properties` 참고.
 - 최근 실행 코드 검증: 서버 GameTest **58개 통과**, 0.9.3 클라이언트 로딩 확인. 이후 문서·Git 작업만으로 재검증하지 않는다.
+- 랜덤 효과가 있는 크리퍼가 생성한 잔류형 포션 구름의 효과 지속시간을 **3초(60틱)**로 제한한다. 변경 후 빌드와 서버 GameTest **58개 통과**.
 - 한계: 벽 가림의 렌더링 코드와 메서드 서명은 확인했지만, 별도의 게임 내부 자동 렌더링·화면 검증은 완료하지 않았다.
 
 ## 유지할 동작
