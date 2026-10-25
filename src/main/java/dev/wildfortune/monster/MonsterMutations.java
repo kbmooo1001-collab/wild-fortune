@@ -13,7 +13,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -28,7 +27,13 @@ public final class MonsterMutations {
     public static final String ROLLED_TAG = "wildfortune:mutations_rolled_v1";
     public static final String NAMED_TAG = "wildfortune:mutation_name_v1";
     public static final String HEALTH_MIGRATED_TAG = "wildfortune:health_mutation_v1";
+    public static final String CREEPER_HEALTH_TAG = "wildfortune:creeper_health_v1";
     public static final Identifier HEALTH_MODIFIER = Identifier.fromNamespaceAndPath("wildfortune", "monster_health");
+    public static final List<Double> CREEPER_HEALTH_AMOUNTS = List.of(0.05, 0.10, 0.15, 0.20);
+    public static final float CREEPER_HEALTH_CHANCE = (float) WildFortuneConfig.DEFAULT_MONSTER_CHANCE;
+    private static final List<Identifier> CREEPER_HEALTH_MODIFIERS = List.of(
+            "creeper_health_5", "creeper_health_10", "creeper_health_15", "creeper_health_20").stream()
+                    .map(id -> Identifier.fromNamespaceAndPath("wildfortune", id)).toList();
     public static final float CHANCE_PER_EFFECT = (float) WildFortuneConfig.DEFAULT_MONSTER_CHANCE;
     public static final List<Holder<MobEffect>> EFFECTS = List.of(
             MobEffects.SPEED, MobEffects.RESISTANCE, MobEffects.STRENGTH);
@@ -81,6 +86,16 @@ public final class MonsterMutations {
         mob.addTag(HEALTH_MIGRATED_TAG);
         var settings = WildFortuneConfig.get();
         if (!settings.monstersEnabled()) return;
+        if (mob instanceof Creeper creeper) {
+            for (int i = 0; i < CREEPER_HEALTH_AMOUNTS.size(); i++) {
+                if (creeper.getRandom().nextFloat() < CREEPER_HEALTH_CHANCE) {
+                    addCreeperHealth(creeper, i, true);
+                }
+            }
+            creeper.addTag(CREEPER_HEALTH_TAG);
+            assignMutationName(mob);
+            return;
+        }
         for (int i = 0; i < WildFortuneConfig.MONSTER_EFFECT_IDS.size(); i++) {
             var rule = settings.monsters().get(WildFortuneConfig.MONSTER_EFFECT_IDS.get(i));
             if (rule.enabled() && mob.getRandom().nextFloat() < rule.chance()) {
@@ -115,23 +130,37 @@ public final class MonsterMutations {
     }
 
     public static int mutationCount(Mob mob) {
+        if (mob instanceof Creeper creeper && creeper.entityTags().contains(CREEPER_HEALTH_TAG)) {
+            return (int) CREEPER_HEALTH_MODIFIERS.stream().filter(id -> hasModifier(creeper, id)).count();
+        }
         return (int) EFFECTS.stream().filter(mob::hasEffect).count() + (hasHealthMutation(mob) ? 1 : 0);
     }
 
-    public static MobEffectInstance creeperCloudEffect(AreaEffectCloud cloud, MobEffectInstance effect) {
-        if (cloud.getOwner() instanceof Creeper creeper && creeper.hasEffect(effect.getEffect())) {
-            return new MobEffectInstance(effect.getEffect(), 60, effect.getAmplifier(), false, true, true);
-        }
-        return effect;
+    public static boolean hasCreeperHealthMutation(Creeper creeper, int index) {
+        return index >= 0 && index < CREEPER_HEALTH_MODIFIERS.size()
+                && hasModifier(creeper, CREEPER_HEALTH_MODIFIERS.get(index));
     }
 
     private static void addHealth(Mob mob, double amount, boolean freshSpawn) {
+        applyHealthModifier(mob, HEALTH_MODIFIER, amount, freshSpawn);
+    }
+
+    private static void addCreeperHealth(Creeper creeper, int index, boolean freshSpawn) {
+        applyHealthModifier(creeper, CREEPER_HEALTH_MODIFIERS.get(index), CREEPER_HEALTH_AMOUNTS.get(index), freshSpawn);
+    }
+
+    private static void applyHealthModifier(Mob mob, Identifier id, double amount, boolean freshSpawn) {
         var attribute = mob.getAttribute(Attributes.MAX_HEALTH);
-        if (attribute == null || hasHealthMutation(mob)) return;
+        if (attribute == null || attribute.getModifier(id) != null) return;
         float ratio = mob.getHealth() / mob.getMaxHealth();
-        attribute.addPermanentModifier(new AttributeModifier(HEALTH_MODIFIER, amount,
+        attribute.addPermanentModifier(new AttributeModifier(id, amount,
                 AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         mob.setHealth(mob.getMaxHealth() * (freshSpawn ? 1 : ratio));
+    }
+
+    private static boolean hasModifier(Mob mob, Identifier id) {
+        var attribute = mob.getAttribute(Attributes.MAX_HEALTH);
+        return attribute != null && attribute.getModifier(id) != null;
     }
 
     public static Style rankStyle(int count) {

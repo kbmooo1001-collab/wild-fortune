@@ -14,6 +14,7 @@ import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
@@ -84,6 +85,58 @@ public final class MonsterMutationsGameTest {
         }
         require(combinations.size() == 16, "Not all 16 combinations were observed: " + combinations);
         WildFortune.LOGGER.info("Mutation sample: {} natural zombies; counts={} / {} / {} / {}; all 16 combinations observed",
+                samples, counts[0], counts[1], counts[2], counts[3]);
+        test.succeed();
+    }
+
+    @GameTest(maxTicks = 200)
+    public void creepersGetFourIndependentStackingHealthMutations(GameTestHelper test) {
+        int samples = 1024;
+        int[] counts = new int[4];
+        Set<Integer> combinations = new HashSet<>();
+        RandomSource seeds = RandomSource.create(7654321L);
+        Creeper fullMutation = null;
+        for (int sample = 0; sample < samples; sample++) {
+            Creeper creeper = spawnCreeper(test, seeds.nextLong());
+            require(creeper.entityTags().contains(MonsterMutations.CREEPER_HEALTH_TAG), "Creeper health roll marker missing");
+            require(creeper.getActiveEffects().isEmpty(), "Creeper received a random potion effect");
+            int mask = 0;
+            double bonus = 0;
+            for (int i = 0; i < counts.length; i++) {
+                if (MonsterMutations.hasCreeperHealthMutation(creeper, i)) {
+                    counts[i]++;
+                    mask |= 1 << i;
+                    bonus += MonsterMutations.CREEPER_HEALTH_AMOUNTS.get(i);
+                }
+            }
+            require(Math.abs(creeper.getMaxHealth() - 20 * (1 + bonus)) < 0.001, "Creeper health modifiers did not add together");
+            require(MonsterMutations.mutationCount(creeper) == Integer.bitCount(mask), "Creeper rank counted wrong mutations");
+            if (mask != 0) assertMutationName(creeper, Integer.bitCount(mask));
+            else require(!creeper.hasCustomName(), "Effect-free creeper received a mutation name");
+            combinations.add(mask);
+            if (mask == 15 && fullMutation == null) fullMutation = creeper;
+            else creeper.discard();
+        }
+        for (int count : counts) {
+            require(Math.abs(count - samples * 0.35) < 60, "Creeper health tier frequency outside expected range: " + count);
+        }
+        require(combinations.size() == 16, "Not all 16 creeper health combinations were observed: " + combinations);
+        require(fullMutation != null && Math.abs(fullMutation.getMaxHealth() - 30) < 0.001,
+                "Four creeper health mutations must total +50% maximum health");
+
+        TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, test.getLevel().registryAccess());
+        fullMutation.saveWithoutId(output);
+        fullMutation.discard();
+        Creeper restored = (Creeper) EntityTypes.CREEPER.create(test.getLevel(), EntitySpawnReason.LOAD);
+        require(restored != null, "Could not restore creeper");
+        restored.load(TagValueInput.create(ProblemReporter.DISCARDING, test.getLevel().registryAccess(), output.buildResult()));
+        for (int i = 0; i < 10; i++) MonsterMutations.onEntityLoad(restored, test.getLevel());
+        require(Math.abs(restored.getMaxHealth() - 30) < 0.001 && restored.getHealth() == 30,
+                "Saved creeper health mutations changed or were reapplied");
+        require(MonsterMutations.mutationCount(restored) == 4 && restored.getActiveEffects().isEmpty(),
+                "Saved creeper mutations or potion effects changed");
+        restored.discard();
+        WildFortune.LOGGER.info("Creeper mutation sample: {} creepers; tiers={} / {} / {} / {}; all 16 combinations observed",
                 samples, counts[0], counts[1], counts[2], counts[3]);
         test.succeed();
     }
@@ -221,6 +274,16 @@ public final class MonsterMutationsGameTest {
         mob.getRandom().setSeed(seed);
         require(level.addFreshEntity(mob), "Could not add zombie");
         return mob;
+    }
+
+    private static Creeper spawnCreeper(GameTestHelper test, long seed) {
+        ServerLevel level = test.getLevel();
+        Creeper creeper = (Creeper) EntityTypes.CREEPER.create(level, EntitySpawnReason.NATURAL);
+        require(creeper != null, "Could not create creeper");
+        creeper.setPos(Vec3.atBottomCenterOf(test.absolutePos(new BlockPos(1, 2, 1))));
+        creeper.getRandom().setSeed(seed);
+        require(level.addFreshEntity(creeper), "Could not add creeper");
+        return creeper;
     }
 
     private static Zombie findZombieWithEffects(GameTestHelper test, int count) {
