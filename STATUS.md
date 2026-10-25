@@ -15,6 +15,6 @@
 - 장비의 단일 효과는 개별 이름, 복수 효과는 긍정·부정 개수 조합 이름이다. 한국어·영어, 등급별 색상·굵기와 전설적인/재앙의 프리즘을 유지한다.
 - 설정 스키마 **3**. 첫 실행에 `config/wildfortune.json`을 자동 생성하고 기존 파일·편집값은 보존한다. 개발용 파일은 `run/config/wildfortune.json`, 추적하는 예제는 `config/wildfortune.example.json`이다.
 - `/wildfortune chance`, `/wildfortune chance monsters`: 무권한 최종 확률표, 내림차순. `/wildfortune reload`: 관리자 전용, 이후 새 추첨부터 적용.
-- 최근 배포 예정: `release/Wild-Fortune-0.9.4.zip` (Git 제외). 별도 config 없이 모드·Fabric API·설치 안내·API 라이선스를 포함한다. 자체 코드의 공개 라이선스는 아직 정하지 않았다.
+- 최근 배포: [Wild Fortune 0.9.4](https://github.com/kbmooo1001-collab/wild-fortune/releases/tag/v0.9.4) (`release/Wild-Fortune-0.9.4.zip`, Git 제외). 별도 config 없이 모드·Fabric API·설치 안내·API 라이선스를 포함한다. 자체 코드의 공개 라이선스는 아직 정하지 않았다.
 
 작업별 파일 위치와 필요한 명령은 `WORKFLOW.md`에서 해당 부분만 확인한다.
