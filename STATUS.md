@@ -1,8 +1,8 @@
-# 현재 상태 — Wild Fortune 0.9.3
+# 현재 상태 — Wild Fortune 0.9.4
 
 - GitHub: https://github.com/kbmooo1001-collab/wild-fortune (비공개). `master` → `origin/master`, 이번 작업 시작 커밋 `32447a2`. 자동 AI 리뷰는 미설정·비활성 상태로 유지했다.
 - 환경: Minecraft Java 26.3 / Fabric Loader 0.20.1 / Fabric API 0.165.0+26.3 / Java 25 / Gradle 9.8.2 / Loom 1.19.3. 버전은 `gradle.properties` 참고.
-- 최근 실행 코드 검증: 서버 GameTest **59개 통과**, 크리퍼 1,024개 표본에서 4개 체력 변이 각각 약 35% 및 16가지 조합 확인. 0.9.3 클라이언트 로딩 확인.
+- 최근 실행 코드 검증: 서버 GameTest **59개 통과**, 크리퍼 1,024개 표본에서 4개 체력 변이 각각 약 35% 및 16가지 조합 확인.
 - 크리퍼는 랜덤 포션 효과 대신 최대 체력 +5%·+10%·+15%·+20%를 각각 **35%**로 추첨한다. 네 효과가 모두 붙으면 최대 체력이 **50% 증가**한다. 기존 저장 개체는 재추첨하지 않는다.
 - 한계: 벽 가림의 렌더링 코드와 메서드 서명은 확인했지만, 별도의 게임 내부 자동 렌더링·화면 검증은 완료하지 않았다.
 
@@ -15,6 +15,6 @@
 - 장비의 단일 효과는 개별 이름, 복수 효과는 긍정·부정 개수 조합 이름이다. 한국어·영어, 등급별 색상·굵기와 전설적인/재앙의 프리즘을 유지한다.
 - 설정 스키마 **3**. 첫 실행에 `config/wildfortune.json`을 자동 생성하고 기존 파일·편집값은 보존한다. 개발용 파일은 `run/config/wildfortune.json`, 추적하는 예제는 `config/wildfortune.example.json`이다.
 - `/wildfortune chance`, `/wildfortune chance monsters`: 무권한 최종 확률표, 내림차순. `/wildfortune reload`: 관리자 전용, 이후 새 추첨부터 적용.
-- 최근 배포: `release/Wild-Fortune-0.9.3.zip` (Git 제외). 별도 config 없이 모드·Fabric API·설치 안내·API 라이선스를 포함한다. 자체 코드의 공개 라이선스는 아직 정하지 않았다.
+- 최근 배포 예정: `release/Wild-Fortune-0.9.4.zip` (Git 제외). 별도 config 없이 모드·Fabric API·설치 안내·API 라이선스를 포함한다. 자체 코드의 공개 라이선스는 아직 정하지 않았다.
 
 작업별 파일 위치와 필요한 명령은 `WORKFLOW.md`에서 해당 부분만 확인한다.
