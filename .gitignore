@@ -1,0 +1,19 @@
+.gradle/
+build/
+run/
+.tools/
+.downloads/
+.idea/
+*.iml
+.vscode/
+
+# Generated distribution bundles and diagnostic artifacts.
+/release/
+/verification/
+/Wild-Fortune-*-설치용/
+/Wild-Fortune-*-설치용.zip
+*.class
+*.log
+*.tmp
+Thumbs.db
+.DS_Store

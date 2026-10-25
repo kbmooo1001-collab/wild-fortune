@@ -1,0 +1,36 @@
+{
+  "required": true,
+  "package": "dev.wildfortune.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "EntityTypeMixin",
+    "GearItemStackMixin",
+    "GearMiningMixin",
+    "GearResultSlotMixin",
+    "GearQuickCraftMixin",
+    "GearRepairRecipeMixin",
+    "GearSmithingMixin",
+    "GearGrindstoneMixin",
+    "GearKnockbackMixin",
+    "GearArrowAccess",
+    "GearProjectileMixin",
+    "GearBowMixin",
+    "GearCrossbowMixin",
+    "GearFlightMixin",
+    "GearShieldMixin",
+    "GearMiningExperienceMixin",
+    "GearBlockExperienceMixin",
+    "GearUtilityExperienceMixin",
+    "GearFireworkMixin"
+  ],
+  "client": [
+    "client.MutationNameRendererMixin",
+    "client.MutationNameStyleMixin",
+    "client.GearBowModelMixin",
+    "client.PrismaticTextMixin",
+    "client.MutationNameOcclusionMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

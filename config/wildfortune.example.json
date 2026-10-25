@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 3,
+  "monsters": {
+    "enabled": true,
+    "excludedEntities": [
+      "minecraft:ender_dragon",
+      "minecraft:wither"
+    ],
+    "effects": {
+      "speed": {
+        "enabled": true,
+        "chance": 0.35,
+        "level": 1
+      },
+      "resistance": {
+        "enabled": true,
+        "chance": 0.35,
+        "level": 1
+      },
+      "strength": {
+        "enabled": true,
+        "chance": 0.35,
+        "level": 1
+      },
+      "health": {
+        "enabled": true,
+        "chance": 0.35,
+        "amount": 0.25
+      }
+    }
+  },
+  "gear": {
+    "enabled": true,
+    "effects": {
+      "sharp": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": 0.1
+      },
+      "efficient": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": 0.1
+      },
+      "sturdy": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": 0.1
+      },
+      "durable": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": 0.2
+      },
+      "blunt": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": -0.1
+      },
+      "sluggish": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": -0.1
+      },
+      "flimsy": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": -0.1
+      },
+      "fragile": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": -0.2
+      },
+      "swift": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": 0.1
+      },
+      "long": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": 0.5
+      },
+      "light": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": 0.05
+      },
+      "steadfast": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": 0.1
+      },
+      "heavy": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": -0.1
+      },
+      "short": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": -0.5
+      },
+      "burdensome": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": -0.05
+      },
+      "unstable": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": -0.1
+      },
+      "learned": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": 0.1
+      },
+      "forgetful": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": -0.1
+      },
+      "vital": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": 1
+      },
+      "frail": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": -1
+      },
+      "soaring": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": 0.05
+      },
+      "dragging": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": -0.05
+      },
+      "resilient": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": 0.1
+      },
+      "lingering": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": -0.1
+      },
+      "deadly": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": 0.1
+      },
+      "feeble": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": -0.1
+      },
+      "ready": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": 0.1
+      },
+      "hesitant": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": -0.1
+      },
+      "piercing": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": 0.05
+      },
+      "floating": {
+        "enabled": true,
+        "chance": 0.3,
+        "amount": -0.05
+      }
+    }
+  }
+}

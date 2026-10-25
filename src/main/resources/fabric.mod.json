@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "wildfortune",
+  "version": "${version}",
+  "name": "Wild Fortune",
+  "description": "Configurable monster mutations and thirty equipment effects with five effect kinds per gear type.",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["dev.wildfortune.WildFortune"]
+  },
+  "mixins": ["wildfortune.mixins.json"],
+  "depends": {
+    "fabricloader": ">=0.20.1",
+    "minecraft": "~26.3",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

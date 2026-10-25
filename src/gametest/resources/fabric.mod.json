@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "wildfortune-test",
+  "version": "1.0.0",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-gametest": [
+      "dev.wildfortune.MonsterMutationsGameTest",
+      "dev.wildfortune.GearAffixesGameTest",
+      "dev.wildfortune.LocalizationGameTest",
+      "dev.wildfortune.GearEquipmentGameTest",
+      "dev.wildfortune.config.WildFortuneConfigGameTest",
+      "dev.wildfortune.config.AffixChanceCommandGameTest",
+      "dev.wildfortune.config.ExpandedGearGameTest",
+      "dev.wildfortune.PrismaticNamesGameTest",
+      "dev.wildfortune.config.GearAcquisitionGameTest"
+    ]
+  }
+}
