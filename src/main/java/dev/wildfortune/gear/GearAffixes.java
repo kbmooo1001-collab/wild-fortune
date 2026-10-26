@@ -42,9 +42,13 @@ public final class GearAffixes {
     private GearAffixes() {}
 
     public static List<GearAffix> getAll(ItemStack stack) {
+        if (stack.isEmpty()) return List.of();
         CustomData data = stack.get(DataComponents.CUSTOM_DATA);
-        if (data == null || stack.isEmpty()) return List.of();
-        var tag = data.copyTag();
+        if (data == null) return List.of();
+        return getAll(stack, data.copyTag());
+    }
+
+    private static List<GearAffix> getAll(ItemStack stack, CompoundTag tag) {
         EnumSet<GearAffix> effects = EnumSet.noneOf(GearAffix.class);
         if (tag.contains(AFFIXES_KEY)) {
             ListTag list = tag.getListOrEmpty(AFFIXES_KEY);
@@ -163,11 +167,14 @@ public final class GearAffixes {
         if (player.level() instanceof ServerLevel && isGear(result) && !isProcessed(result)) roll(result, player.getRandom());
     }
 
-    public static double net(ItemStack stack, GearAffix.Kind kind) { return net(stack, getAll(stack), kind); }
-
-    private static double net(ItemStack stack, List<GearAffix> effects, GearAffix.Kind kind) {
+    public static double net(ItemStack stack, GearAffix.Kind kind) {
         CustomData data = stack.get(DataComponents.CUSTOM_DATA);
-        CompoundTag values = data == null ? new CompoundTag() : data.copyTag().getCompoundOrEmpty(VALUES_KEY);
+        if (data == null || stack.isEmpty()) return 0;
+        CompoundTag tag = data.copyTag();
+        return net(tag.getCompoundOrEmpty(VALUES_KEY), getAll(stack, tag), kind);
+    }
+
+    private static double net(CompoundTag values, List<GearAffix> effects, GearAffix.Kind kind) {
         return effects.stream().filter(effect -> effect.kind == kind).mapToDouble(effect -> savedAmount(values, effect)).sum();
     }
 
@@ -181,21 +188,25 @@ public final class GearAffixes {
     }
 
     public static ItemAttributeModifiers attributes(ItemStack stack, ItemAttributeModifiers base) {
-        List<GearAffix> effects = getAll(stack);
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        if (data == null || stack.isEmpty()) return base;
+        CompoundTag tag = data.copyTag();
+        List<GearAffix> effects = getAll(stack, tag);
         if (effects.isEmpty()) return base;
+        CompoundTag values = tag.getCompoundOrEmpty(VALUES_KEY);
         List<ItemAttributeModifiers.Entry> entries = new ArrayList<>(base.modifiers());
         EquipmentSlotGroup slot = activeSlot(stack);
-        add(entries, Attributes.ATTACK_DAMAGE, "attack", net(stack, effects, GearAffix.Kind.ATTACK),
+        add(entries, Attributes.ATTACK_DAMAGE, "attack", net(values, effects, GearAffix.Kind.ATTACK),
                 AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL, slot);
-        add(entries, Attributes.ATTACK_SPEED, "attack_speed", net(stack, effects, GearAffix.Kind.ATTACK_SPEED),
+        add(entries, Attributes.ATTACK_SPEED, "attack_speed", net(values, effects, GearAffix.Kind.ATTACK_SPEED),
                 AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL, slot);
         add(entries, category(stack) == Category.TOOL ? Attributes.BLOCK_INTERACTION_RANGE : Attributes.ENTITY_INTERACTION_RANGE,
-                "reach", net(stack, effects, GearAffix.Kind.REACH), AttributeModifier.Operation.ADD_VALUE, slot);
-        add(entries, Attributes.MOVEMENT_SPEED, "movement", net(stack, effects, GearAffix.Kind.MOVEMENT),
+                "reach", net(values, effects, GearAffix.Kind.REACH), AttributeModifier.Operation.ADD_VALUE, slot);
+        add(entries, Attributes.MOVEMENT_SPEED, "movement", net(values, effects, GearAffix.Kind.MOVEMENT),
                 AttributeModifier.Operation.ADD_MULTIPLIED_BASE, slot);
-        add(entries, Attributes.MAX_HEALTH, "health", net(stack, effects, GearAffix.Kind.HEALTH),
+        add(entries, Attributes.MAX_HEALTH, "health", net(values, effects, GearAffix.Kind.HEALTH),
                 AttributeModifier.Operation.ADD_VALUE, slot);
-        double armor = net(stack, effects, GearAffix.Kind.ARMOR);
+        double armor = net(values, effects, GearAffix.Kind.ARMOR);
         for (var entry : base.modifiers()) {
             if (entry.attribute().equals(Attributes.ARMOR) && entry.modifier().operation() == AttributeModifier.Operation.ADD_VALUE) {
                 add(entries, Attributes.ARMOR, "armor", entry.modifier().amount() * armor,
@@ -263,11 +274,15 @@ public final class GearAffixes {
     }
 
     public static List<Component> descriptions(ItemStack stack) {
-        List<GearAffix> effects = getAll(stack);
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        if (data == null || stack.isEmpty()) return List.of();
+        CompoundTag tag = data.copyTag();
+        List<GearAffix> effects = getAll(stack, tag);
         List<Component> lines = new ArrayList<>();
+        CompoundTag values = tag.getCompoundOrEmpty(VALUES_KEY);
         for (GearAffix.Kind kind : GearAffix.Kind.values()) {
             if (effects.stream().noneMatch(e -> e.kind == kind)) continue;
-            double value = net(stack, effects, kind);
+            double value = net(values, effects, kind);
             boolean absolute = kind == GearAffix.Kind.REACH || kind == GearAffix.Kind.HEALTH;
             boolean duration = kind == GearAffix.Kind.DRAW || kind == GearAffix.Kind.RECOVERY;
             String suffix = absolute ? "" : "%";
@@ -286,8 +301,9 @@ public final class GearAffixes {
     public static void inherit(ItemStack result, ItemStack source) {
         if (result.isEmpty() || !isGear(result) || source.isEmpty()) return;
         CustomData data = source.get(DataComponents.CUSTOM_DATA);
-        CompoundTag values = data == null ? new CompoundTag() : data.copyTag().getCompoundOrEmpty(VALUES_KEY);
-        applyValues(result, getAll(source).stream().filter(effect -> supports(result, effect)).toList(),
+        CompoundTag tag = data == null ? new CompoundTag() : data.copyTag();
+        CompoundTag values = tag.getCompoundOrEmpty(VALUES_KEY);
+        applyValues(result, getAll(source, tag).stream().filter(effect -> supports(result, effect)).toList(),
                 effect -> savedAmount(values, effect));
     }
 
